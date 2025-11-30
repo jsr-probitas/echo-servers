@@ -46,6 +46,8 @@ docker run -p 8080:8080 -v $(pwd)/.env:/app/.env ghcr.io/jsr-probitas/echo-http:
 | `/delay/{seconds}` | GET    | Echo after delay                          |
 | `/health`          | GET    | Health check                              |
 
+See [docs/api.md](./docs/api.md) for detailed API reference.
+
 ## Response Format
 
 ```json
