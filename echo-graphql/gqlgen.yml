@@ -1,0 +1,35 @@
+# gqlgen configuration file
+# See https://gqlgen.com/config/ for documentation
+
+schema:
+  - graph/schema.graphqls
+
+exec:
+  filename: graph/generated.go
+  package: graph
+
+model:
+  filename: graph/models_gen.go
+  package: graph
+
+resolver:
+  layout: follow-schema
+  dir: graph
+  package: graph
+  filename_template: "{name}.resolvers.go"
+  omit_template_comment: true
+
+autobind:
+  - github.com/jsr-probitas/dockerfiles/echo-graphql/graph/model
+
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.ID
+  Int:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int
+  Message:
+    model: github.com/jsr-probitas/dockerfiles/echo-graphql/graph/model.Message
+  EchoResult:
+    model: github.com/jsr-probitas/dockerfiles/echo-graphql/graph/model.EchoResult

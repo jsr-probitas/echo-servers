@@ -1,0 +1,46 @@
+type Query {
+  """Echo back the input message"""
+  echo(message: String!): String!
+
+  """Echo with delay for timeout testing"""
+  echoWithDelay(message: String!, delayMs: Int!): String!
+
+  """Always returns an error"""
+  echoError(message: String!): String!
+
+  """Returns partial data with errors"""
+  echoPartialError(messages: [String!]!): [EchoResult!]!
+
+  """Returns data with custom extensions"""
+  echoWithExtensions(message: String!): String!
+}
+
+type Mutation {
+  """Create a message and return it"""
+  createMessage(text: String!): Message!
+
+  """Update a message"""
+  updateMessage(id: ID!, text: String!): Message!
+
+  """Delete a message (returns true if existed)"""
+  deleteMessage(id: ID!): Boolean!
+}
+
+type Subscription {
+  """Subscribe to message events"""
+  messageCreated: Message!
+
+  """Subscribe to countdown (for streaming tests)"""
+  countdown(from: Int!): Int!
+}
+
+type Message {
+  id: ID!
+  text: String!
+  createdAt: String!
+}
+
+type EchoResult {
+  message: String
+  error: String
+}
