@@ -8,6 +8,7 @@ default:
 
 # Run linter on all packages
 lint: echo-http::lint echo-grpc::lint echo-graphql::lint
+    dprint check
 
 # Run tests on all packages
 test: echo-http::test echo-grpc::test echo-graphql::test
