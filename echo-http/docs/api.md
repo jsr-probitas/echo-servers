@@ -2,9 +2,13 @@
 
 ## Base URL
 
-```
-http://localhost:80
-```
+| Environment    | URL                      |
+| -------------- | ------------------------ |
+| Container      | `http://localhost:80`    |
+| Docker Compose | `http://localhost:18080` |
+
+> **Note:** The container listens on port 80. When using `docker compose up`, the
+> port is mapped to 18080 on the host.
 
 ## Endpoints
 
@@ -214,6 +218,417 @@ curl http://localhost:80/health
   "status": "ok"
 }
 ```
+
+---
+
+## Utility Endpoints
+
+### ANY /anything and /anything/{path}
+
+Echo any request information including method, headers, body, query parameters, and
+client IP.
+
+**Request:**
+
+```bash
+curl -X POST "http://localhost:80/anything/path/to/resource?foo=bar" \
+  -H "Content-Type: application/json" \
+  -d '{"key": "value"}'
+```
+
+**Response:**
+
+```json
+{
+  "method": "POST",
+  "url": "/anything/path/to/resource?foo=bar",
+  "args": {
+    "foo": "bar"
+  },
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "origin": "127.0.0.1",
+  "data": "{\"key\": \"value\"}",
+  "json": {
+    "key": "value"
+  }
+}
+```
+
+| Field     | Type   | Description                                  |
+| --------- | ------ | -------------------------------------------- |
+| `method`  | string | HTTP method used                             |
+| `url`     | string | Request URL including query string           |
+| `args`    | object | Parsed query parameters                      |
+| `headers` | object | Request headers                              |
+| `origin`  | string | Client IP address                            |
+| `data`    | string | Raw request body (POST/PUT/PATCH only)       |
+| `json`    | object | Parsed JSON body (if Content-Type: json)     |
+| `form`    | object | Parsed form body (if Content-Type: form)     |
+| `files`   | object | Uploaded file names (if multipart/form-data) |
+
+### GET /ip
+
+Return the client's IP address.
+
+**Request:**
+
+```bash
+curl http://localhost:80/ip
+```
+
+**Response:**
+
+```json
+{
+  "origin": "127.0.0.1"
+}
+```
+
+### GET /user-agent
+
+Return the User-Agent header.
+
+**Request:**
+
+```bash
+curl http://localhost:80/user-agent
+```
+
+**Response:**
+
+```json
+{
+  "user-agent": "curl/8.0.0"
+}
+```
+
+---
+
+## Redirect Endpoints
+
+### GET /redirect/{n}
+
+Redirect n times before returning 200 OK with a final response.
+
+| Parameter | Type | Range | Description                         |
+| --------- | ---- | ----- | ----------------------------------- |
+| `n`       | int  | 0-100 | Number of redirects before response |
+
+**Examples:**
+
+```bash
+# Redirect 3 times then return 200
+curl -L http://localhost:80/redirect/3
+
+# No redirect (immediate response)
+curl http://localhost:80/redirect/0
+```
+
+**Final Response:**
+
+```json
+{
+  "redirected": true
+}
+```
+
+### GET /redirect-to
+
+Redirect to a specified URL.
+
+| Parameter     | Type   | Description                                    |
+| ------------- | ------ | ---------------------------------------------- |
+| `url`         | string | Target URL (required)                          |
+| `status_code` | int    | Redirect status code (301, 302, 303, 307, 308) |
+
+**Examples:**
+
+```bash
+# Default 302 redirect
+curl -i "http://localhost:80/redirect-to?url=https://example.com"
+
+# 301 permanent redirect
+curl -i "http://localhost:80/redirect-to?url=https://example.com&status_code=301"
+```
+
+### GET /absolute-redirect/{n}
+
+Redirect n times using absolute URLs.
+
+| Parameter | Type | Range | Description         |
+| --------- | ---- | ----- | ------------------- |
+| `n`       | int  | 0-100 | Number of redirects |
+
+```bash
+curl -L http://localhost:80/absolute-redirect/3
+```
+
+### GET /relative-redirect/{n}
+
+Redirect n times using relative URLs.
+
+| Parameter | Type | Range | Description         |
+| --------- | ---- | ----- | ------------------- |
+| `n`       | int  | 0-100 | Number of redirects |
+
+```bash
+curl -L http://localhost:80/relative-redirect/3
+```
+
+---
+
+## Authentication Endpoints
+
+### GET /basic-auth/{user}/{pass}
+
+Validate Basic Authentication credentials. Returns 200 if credentials match, 401
+otherwise.
+
+| Parameter | Type   | Description       |
+| --------- | ------ | ----------------- |
+| `user`    | string | Expected username |
+| `pass`    | string | Expected password |
+
+**Request:**
+
+```bash
+curl -u testuser:testpass http://localhost:80/basic-auth/testuser/testpass
+```
+
+**Response (success):**
+
+```json
+{
+  "authenticated": true,
+  "user": "testuser"
+}
+```
+
+**Response (failure):** 401 Unauthorized with `WWW-Authenticate: Basic` header.
+
+### GET /hidden-basic-auth/{user}/{pass}
+
+Similar to `/basic-auth` but returns 404 instead of 401 on authentication failure.
+Useful for testing authentication without browser prompts.
+
+| Parameter | Type   | Description       |
+| --------- | ------ | ----------------- |
+| `user`    | string | Expected username |
+| `pass`    | string | Expected password |
+
+```bash
+curl -u testuser:testpass http://localhost:80/hidden-basic-auth/testuser/testpass
+```
+
+### GET /bearer
+
+Validate Bearer token authentication. Returns 200 if a valid Bearer token is present,
+401 otherwise.
+
+**Request:**
+
+```bash
+curl -H "Authorization: Bearer my-token-123" http://localhost:80/bearer
+```
+
+**Response (success):**
+
+```json
+{
+  "authenticated": true,
+  "token": "my-token-123"
+}
+```
+
+**Response (failure):** 401 Unauthorized with `WWW-Authenticate: Bearer` header.
+
+---
+
+## Cookie Endpoints
+
+### GET /cookies
+
+Echo all cookies sent with the request.
+
+**Request:**
+
+```bash
+curl -b "session=abc123; user=john" http://localhost:80/cookies
+```
+
+**Response:**
+
+```json
+{
+  "cookies": {
+    "session": "abc123",
+    "user": "john"
+  }
+}
+```
+
+### GET /cookies/set
+
+Set cookies from query parameters and redirect to `/cookies`.
+
+**Request:**
+
+```bash
+curl -c - -L "http://localhost:80/cookies/set?session=abc123&user=john"
+```
+
+Cookies are set with `Path=/`, `HttpOnly`, and `SameSite=Lax`.
+
+### GET /cookies/delete
+
+Delete cookies specified in query parameters and redirect to `/cookies`.
+
+**Request:**
+
+```bash
+curl -b "session=abc123" -c - -L "http://localhost:80/cookies/delete?session"
+```
+
+---
+
+## Data Generation Endpoints
+
+### GET /bytes/{n}
+
+Return n random bytes.
+
+| Parameter | Type | Range    | Description     |
+| --------- | ---- | -------- | --------------- |
+| `n`       | int  | 0-102400 | Number of bytes |
+
+**Request:**
+
+```bash
+# Get 100 random bytes
+curl http://localhost:80/bytes/100 --output random.bin
+```
+
+**Response:** Binary data with `Content-Type: application/octet-stream`.
+
+### GET /stream/{n}
+
+Stream n lines of JSON data using chunked transfer encoding.
+
+| Parameter | Type | Range | Description     |
+| --------- | ---- | ----- | --------------- |
+| `n`       | int  | 0-100 | Number of lines |
+
+**Request:**
+
+```bash
+curl http://localhost:80/stream/5
+```
+
+**Response:** Newline-delimited JSON objects:
+
+```json
+{"id":0,"url":"/stream/5","args":{},"headers":{},"origin":"127.0.0.1"}
+{"id":1,"url":"/stream/5","args":{},"headers":{},"origin":"127.0.0.1"}
+{"id":2,"url":"/stream/5","args":{},"headers":{},"origin":"127.0.0.1"}
+{"id":3,"url":"/stream/5","args":{},"headers":{},"origin":"127.0.0.1"}
+{"id":4,"url":"/stream/5","args":{},"headers":{},"origin":"127.0.0.1"}
+```
+
+### GET /drip
+
+Drip data byte-by-byte over a specified duration.
+
+| Parameter  | Type  | Default | Range   | Description              |
+| ---------- | ----- | ------- | ------- | ------------------------ |
+| `duration` | float | 2       | 0-60    | Total duration (seconds) |
+| `numbytes` | int   | 10      | 0-10240 | Number of bytes to drip  |
+| `delay`    | float | 0       | 0-60    | Initial delay (seconds)  |
+
+**Request:**
+
+```bash
+# Drip 20 bytes over 5 seconds
+curl "http://localhost:80/drip?duration=5&numbytes=20"
+```
+
+**Response:** `*` characters streamed at regular intervals.
+
+---
+
+## Compression Endpoints
+
+### GET /gzip
+
+Return a gzip-compressed response.
+
+**Request:**
+
+```bash
+curl --compressed http://localhost:80/gzip
+```
+
+**Response:**
+
+```json
+{
+  "compressed": true,
+  "method": "gzip",
+  "origin": "127.0.0.1",
+  "headers": {}
+}
+```
+
+Response includes `Content-Encoding: gzip` header.
+
+### GET /deflate
+
+Return a deflate-compressed response.
+
+**Request:**
+
+```bash
+curl --compressed http://localhost:80/deflate
+```
+
+**Response:**
+
+```json
+{
+  "compressed": true,
+  "method": "deflate",
+  "origin": "127.0.0.1",
+  "headers": {}
+}
+```
+
+Response includes `Content-Encoding: deflate` header.
+
+### GET /brotli
+
+Return a brotli-compressed response.
+
+**Request:**
+
+```bash
+curl --compressed http://localhost:80/brotli
+```
+
+**Response:**
+
+```json
+{
+  "compressed": true,
+  "method": "br",
+  "origin": "127.0.0.1",
+  "headers": {}
+}
+```
+
+Response includes `Content-Encoding: br` header.
+
+---
 
 ## Response Format
 

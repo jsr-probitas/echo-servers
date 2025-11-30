@@ -1,5 +1,15 @@
 # echo-grpc API Reference
 
+## Base URL
+
+| Environment    | Address           |
+| -------------- | ----------------- |
+| Container      | `localhost:50051` |
+| Docker Compose | `localhost:50051` |
+
+> **Note:** The container listens on port 50051. The same port is exposed
+> when using `docker compose up`.
+
 ## Services
 
 ### Echo Service (echo.v1.Echo)

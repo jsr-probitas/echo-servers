@@ -1,5 +1,15 @@
 # echo-graphql API Reference
 
+## Base URL
+
+| Environment    | URL                      |
+| -------------- | ------------------------ |
+| Container      | `http://localhost:8080`  |
+| Docker Compose | `http://localhost:14000` |
+
+> **Note:** The container listens on port 8080. When using `docker compose up`, the
+> port is mapped to 14000 on the host.
+
 ## Endpoints
 
 | Path       | Description        |
@@ -122,7 +132,7 @@ query {
 **curl:**
 
 ```bash
-curl -X POST http://localhost:8080/graphql \
+curl -X POST http://localhost:14000/graphql \
   -H "Content-Type: application/json" \
   -d '{"query": "{ echo(message: \"hello\") }"}'
 ```
@@ -145,7 +155,7 @@ query {
 **curl:**
 
 ```bash
-curl -X POST http://localhost:8080/graphql \
+curl -X POST http://localhost:14000/graphql \
   -H "Content-Type: application/json" \
   -d '{"query": "{ echoWithDelay(message: \"hello\", delayMs: 5000) }"}'
 ```
@@ -269,7 +279,7 @@ query {
 **curl:**
 
 ```bash
-curl -X POST http://localhost:8080/graphql \
+curl -X POST http://localhost:14000/graphql \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer token123" \
   -d '{"query": "{ echoHeaders { authorization contentType all { name value } } }"}'
@@ -426,7 +436,7 @@ mutation {
 **curl:**
 
 ```bash
-curl -X POST http://localhost:8080/graphql \
+curl -X POST http://localhost:14000/graphql \
   -H "Content-Type: application/json" \
   -d '{"query": "mutation { createMessage(text: \"Hello\") { id text createdAt } }"}'
 ```
@@ -513,7 +523,7 @@ mutation {
 
 ## Subscriptions
 
-Subscriptions use WebSocket protocol. Connect to `ws://localhost:8080/graphql`.
+Subscriptions use WebSocket protocol. Connect to `ws://localhost:14000/graphql`.
 
 ### messageCreated
 
@@ -533,7 +543,7 @@ subscription {
 
 ```bash
 echo '{"type":"start","id":"1","payload":{"query":"subscription { messageCreated { id text } }"}}' | \
-  websocat ws://localhost:8080/graphql -n
+  websocat ws://localhost:14000/graphql -n
 ```
 
 ### countdown
@@ -616,7 +626,7 @@ query {
 **curl:**
 
 ```bash
-curl -X POST http://localhost:8080/graphql \
+curl -X POST http://localhost:14000/graphql \
   -H "Content-Type: application/json" \
   -d '{"query": "{ __schema { types { name } } }"}'
 ```
@@ -660,7 +670,7 @@ GraphQL allows partial success. Some fields may return data while others return 
 ## Health Check
 
 ```bash
-curl http://localhost:8080/health
+curl http://localhost:14000/health
 ```
 
 **Response:**

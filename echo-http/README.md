@@ -36,15 +36,15 @@ docker run -p 8080:8080 -v $(pwd)/.env:/app/.env ghcr.io/jsr-probitas/echo-http:
 
 ### Echo Endpoints
 
-| Endpoint     | Method | Description                               |
-| ------------ | ------ | ----------------------------------------- |
-| `/get`       | GET    | Echo request info (query params, headers) |
-| `/post`      | POST   | Echo request body (JSON, form data)       |
-| `/put`       | PUT    | Echo request body                         |
-| `/patch`     | PATCH  | Echo request body                         |
-| `/delete`    | DELETE | Echo request info                         |
-| `/anything`  | ANY    | Echo any request (method, headers, body)  |
-| `/anything/*`| ANY    | Echo any request with path                |
+| Endpoint      | Method | Description                               |
+| ------------- | ------ | ----------------------------------------- |
+| `/get`        | GET    | Echo request info (query params, headers) |
+| `/post`       | POST   | Echo request body (JSON, form data)       |
+| `/put`        | PUT    | Echo request body                         |
+| `/patch`      | PATCH  | Echo request body                         |
+| `/delete`     | DELETE | Echo request info                         |
+| `/anything`   | ANY    | Echo any request (method, headers, body)  |
+| `/anything/*` | ANY    | Echo any request with path                |
 
 ### Utility Endpoints
 
@@ -59,44 +59,44 @@ docker run -p 8080:8080 -v $(pwd)/.env:/app/.env ghcr.io/jsr-probitas/echo-http:
 
 ### Redirect Endpoints
 
-| Endpoint               | Method | Description                           |
-| ---------------------- | ------ | ------------------------------------- |
-| `/redirect/{n}`        | GET    | Redirect n times before final response|
-| `/redirect-to`         | GET    | Redirect to URL (?url=...&status_code=)|
-| `/absolute-redirect/{n}`| GET   | Redirect n times with absolute URLs   |
-| `/relative-redirect/{n}`| GET   | Redirect n times with relative URLs   |
+| Endpoint                 | Method | Description                             |
+| ------------------------ | ------ | --------------------------------------- |
+| `/redirect/{n}`          | GET    | Redirect n times before final response  |
+| `/redirect-to`           | GET    | Redirect to URL (?url=...&status_code=) |
+| `/absolute-redirect/{n}` | GET    | Redirect n times with absolute URLs     |
+| `/relative-redirect/{n}` | GET    | Redirect n times with relative URLs     |
 
 ### Authentication Endpoints
 
-| Endpoint                     | Method | Description                              |
-| ---------------------------- | ------ | ---------------------------------------- |
-| `/basic-auth/{user}/{pass}`  | GET    | Basic auth (200 if match, 401 otherwise) |
-| `/hidden-basic-auth/{user}/{pass}` | GET | Basic auth (200 if match, 404 otherwise)|
-| `/bearer`                    | GET    | Bearer token validation                  |
+| Endpoint                           | Method | Description                              |
+| ---------------------------------- | ------ | ---------------------------------------- |
+| `/basic-auth/{user}/{pass}`        | GET    | Basic auth (200 if match, 401 otherwise) |
+| `/hidden-basic-auth/{user}/{pass}` | GET    | Basic auth (200 if match, 404 otherwise) |
+| `/bearer`                          | GET    | Bearer token validation                  |
 
 ### Cookie Endpoints
 
-| Endpoint          | Method | Description                              |
-| ----------------- | ------ | ---------------------------------------- |
-| `/cookies`        | GET    | Echo request cookies                     |
-| `/cookies/set`    | GET    | Set cookies (?name=value) and redirect   |
-| `/cookies/delete` | GET    | Delete cookies (?name) and redirect      |
+| Endpoint          | Method | Description                            |
+| ----------------- | ------ | -------------------------------------- |
+| `/cookies`        | GET    | Echo request cookies                   |
+| `/cookies/set`    | GET    | Set cookies (?name=value) and redirect |
+| `/cookies/delete` | GET    | Delete cookies (?name) and redirect    |
 
 ### Binary Data Endpoints
 
-| Endpoint       | Method | Description                      |
-| -------------- | ------ | -------------------------------- |
-| `/bytes/{n}`   | GET    | Return n random bytes (max 100KB)|
-| `/stream/{n}`  | GET    | Stream n JSON lines (max 100)    |
-| `/drip`        | GET    | Drip data (?duration=&numbytes=&delay=)|
+| Endpoint      | Method | Description                             |
+| ------------- | ------ | --------------------------------------- |
+| `/bytes/{n}`  | GET    | Return n random bytes (max 100KB)       |
+| `/stream/{n}` | GET    | Stream n JSON lines (max 100)           |
+| `/drip`       | GET    | Drip data (?duration=&numbytes=&delay=) |
 
 ### Compression Endpoints
 
-| Endpoint    | Method | Description                   |
-| ----------- | ------ | ----------------------------- |
-| `/gzip`     | GET    | Return gzip-compressed response |
-| `/deflate`  | GET    | Return deflate-compressed response |
-| `/brotli`   | GET    | Return brotli-compressed response |
+| Endpoint   | Method | Description                        |
+| ---------- | ------ | ---------------------------------- |
+| `/gzip`    | GET    | Return gzip-compressed response    |
+| `/deflate` | GET    | Return deflate-compressed response |
+| `/brotli`  | GET    | Return brotli-compressed response  |
 
 See [docs/api.md](./docs/api.md) for detailed API reference.
 
