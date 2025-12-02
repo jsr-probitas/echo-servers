@@ -30,7 +30,7 @@ func main() {
 	healthpb.RegisterHealthServer(s, healthServer)
 
 	// Enable server reflection (v1 and v1alpha)
-	server.RegisterReflection(s, cfg.ReflectionIncludeDeps)
+	server.RegisterReflection(s, cfg.ReflectionIncludeDeps, cfg.DisableReflectionV1, cfg.DisableReflectionV1Alpha)
 
 	log.Printf("Starting server on %s", cfg.Addr())
 	if err := s.Serve(lis); err != nil {

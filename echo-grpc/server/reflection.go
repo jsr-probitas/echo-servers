@@ -22,15 +22,29 @@ import (
 // false (default), the reflection response will omit transitive dependencies,
 // forcing clients to resolve imports themselves. When true, it falls back to
 // the standard gRPC reflection implementation.
-func RegisterReflection(s *grpc.Server, includeDeps bool) {
+//
+// The disableV1 and disableV1Alpha flags allow selective disabling of specific
+// reflection API versions for compatibility testing.
+func RegisterReflection(s *grpc.Server, includeDeps, disableV1, disableV1Alpha bool) {
+	if disableV1 && disableV1Alpha {
+		// Both versions disabled, skip registration
+		return
+	}
+
 	if includeDeps {
 		reflection.Register(s)
 		return
 	}
 
 	svr := newReflectionServer(s, includeDeps)
-	reflectionv1.RegisterServerReflectionServer(s, svr)
-	reflectionv1alpha.RegisterServerReflectionServer(s, &v1AlphaAdapter{svr: svr})
+
+	if !disableV1 {
+		reflectionv1.RegisterServerReflectionServer(s, svr)
+	}
+
+	if !disableV1Alpha {
+		reflectionv1alpha.RegisterServerReflectionServer(s, &v1AlphaAdapter{svr: svr})
+	}
 }
 
 type reflectionServer struct {

@@ -22,6 +22,8 @@ docker run -p 50051:50051 ghcr.io/jsr-probitas/echo-grpc:latest
 - `HOST` (default `0.0.0.0`): Bind address
 - `PORT` (default `50051`): Listen port
 - `REFLECTION_INCLUDE_DEPENDENCIES` (default `false`): If `true`, server reflection returns transitive proto dependencies (standard gRPC behavior). Default `false` returns only the containing file to reproduce missing-import scenarios.
+- `DISABLE_REFLECTION_V1` (default `false`): Disable gRPC reflection v1 API
+- `DISABLE_REFLECTION_V1ALPHA` (default `false`): Disable gRPC reflection v1alpha API
 
 ```bash
 # Custom port
@@ -29,6 +31,12 @@ docker run -p 9000:9000 -e PORT=9000 ghcr.io/jsr-probitas/echo-grpc:latest
 
 # Using .env file
 docker run -p 50051:50051 -v $(pwd)/.env:/app/.env ghcr.io/jsr-probitas/echo-grpc:latest
+
+# Disable v1alpha reflection (v1 only)
+docker run -p 50051:50051 -e DISABLE_REFLECTION_V1ALPHA=true ghcr.io/jsr-probitas/echo-grpc:latest
+
+# Disable v1 reflection (v1alpha only)
+docker run -p 50051:50051 -e DISABLE_REFLECTION_V1=true ghcr.io/jsr-probitas/echo-grpc:latest
 ```
 
 ## API
